@@ -11,7 +11,8 @@ INSERT INTO city VALUES
 (5, 'San Diego'),
 (6, 'Davis'),
 (7, 'Riverside'),
-(8, 'Santa Cruz');
+(8, 'Santa Cruz'),
+(9, 'San Fransisco');
 
 ----------------------------
 -- CAMPUS
@@ -24,7 +25,8 @@ INSERT INTO campus VALUES
 (50, 5, 'UCSD'),
 (60, 6, 'UCD'),
 (70, 7, 'UCR'),
-(80, 8, 'UCSC');
+(80, 8, 'UCSC'),
+(90, 9, 'UCSF');
 
 ----------------------------
 -- STORES

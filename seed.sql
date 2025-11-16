@@ -12,7 +12,8 @@ INSERT INTO city VALUES
 (6, 'Davis'),
 (7, 'Riverside'),
 (8, 'Santa Cruz'),
-(9, 'San Fransisco');
+(9, 'San Fransisco'),
+(0, 'Santa Barbara');
 
 ----------------------------
 -- CAMPUS
@@ -26,7 +27,8 @@ INSERT INTO campus VALUES
 (60, 6, 'UCD'),
 (70, 7, 'UCR'),
 (80, 8, 'UCSC'),
-(90, 9, 'UCSF');
+(90, 9, 'UCSF'),
+(00, 0, 'UCSB');
 
 ----------------------------
 -- STORES
@@ -42,7 +44,9 @@ INSERT INTO store VALUES
 (500, 'Triton Store', 50),
 (600, 'Aggie Store', 60),
 (700, 'Highlander Store', 70),
-(800, 'Banana Slug Store', 80);
+(800, 'Banana Slug Store', 80),
+(900, 'UCSF Campus Store', 90),
+(000, 'Markets & Eateries', 00);
 
 ----------------------------
 -- CUSTOMERS (15)
@@ -66,28 +70,29 @@ INSERT INTO customer VALUES
 
 ----------------------------
 -- PRODUCT (20)
+--Product sizes: S = SMALL, M = MEDIUM, L = LARGE
 ----------------------------
 INSERT INTO product VALUES
-(5000, 'Blue Hoodie', 'APPAREL', 10, 50.00),
-(5001, 'Gold Hoodie', 'APPAREL', 10, 60.00),
-(5002, 'Campus Mug', 'MERCH', 0, 15.00),
-(5003, 'Notebook', 'STAT', 0, 3.00),
-(5004, 'Sticker Pack', 'MERCH', 0, 5.00),
-(5005, 'UCM Hat', 'APPAREL', 0, 20.00),
-(5006, 'Water Bottle', 'MERCH', 0, 12.00),
-(5007, 'Black Hoodie', 'APPAREL', 10, 55.00),
-(5008, 'UCLA Hoodie', 'APPAREL', 10, 70.00),
-(5009, 'UCB Jacket', 'APPAREL', 10, 120.00),
-(5010, 'Pencil Set', 'STAT', 0, 2.50),
-(5011, 'USB Drive', 'TECH', 0, 9.99),
-(5012, 'Laptop Sleeve', 'TECH', 0, 25.00),
-(5013, 'Travel Bag', 'APPAREL', 0, 80.00),
-(5014, 'Scarf', 'APPAREL', 0, 18.00),
-(5015, 'Keychain', 'MERCH', 0, 4.00),
-(5016, 'Campus Flag', 'MERCH', 0, 14.00),
-(5017, 'Poster', 'MERCH', 0, 9.00),
-(5018, 'Pen', 'STAT', 0, 1.50),
-(5019, 'Planner', 'STAT', 0, 8.00);
+(5000, 'Blue Hoodie', 'APPAREL', 'L', 50.00),
+(5001, 'Gold Hoodie', 'APPAREL', 'L', 60.00),
+(5002, 'Campus Mug', 'MERCH', 'S', 15.00),
+(5003, 'Notebook', 'STAT', 'M', 3.00),
+(5004, 'Sticker Pack', 'MERCH', 'S', 5.00),
+(5005, 'UCM Hat', 'APPAREL', 'M', 20.00),
+(5006, 'Water Bottle', 'MERCH', 'M', 12.00),
+(5007, 'Black Hoodie', 'APPAREL', 'L', 55.00),
+(5008, 'UCLA Hoodie', 'APPAREL', 'L', 70.00),
+(5009, 'UCB Jacket', 'APPAREL', 'L', 120.00),
+(5010, 'Pencil Set', 'STAT', 'S', 2.50),
+(5011, 'USB Drive', 'TECH', 'S', 9.99),
+(5012, 'Laptop Sleeve', 'TECH', 'M', 25.00),
+(5013, 'Travel Bag', 'APPAREL', 'L', 80.00),
+(5014, 'Scarf', 'APPAREL', 'M', 18.00),
+(5015, 'Keychain', 'MERCH', 'S', 4.00),
+(5016, 'Campus Flag', 'MERCH', 'S', 14.00),
+(5017, 'Poster', 'MERCH', 'L', 9.00),
+(5018, 'Pen', 'STAT', 'S', 1.50),
+(5019, 'Planner', 'STAT', 'M', 8.00);
 
 ----------------------------
 -- STOCK (15 per store total 150)
@@ -107,24 +112,25 @@ INSERT INTO stock VALUES
 
 ----------------------------
 -- TRANSACTIONS (12)
+-- Transaction status: R = RECEIVED, S = SHIPPED, C = COMPLETED, D = DECLINED, U = UNKNOWN/UNCOMFIRMED
 ----------------------------
 INSERT INTO transactions VALUES
-(9000,1000,100,'P',80.00,'2025-09-01'),
-(9001,1001,200,'P',29.00,'2025-09-02'),
-(9002,1002,300,'P',20.00,'2025-09-03'),
-(9003,1003,300,'P',45.00,'2025-09-04'),
-(9004,1004,400,'P',30.00,'2025-09-05'),
-(9005,1005,500,'P',55.00,'2025-09-06'),
-(9006,1006,600,'P',99.99,'2025-09-07'),
-(9007,1007,700,'P',22.00,'2025-09-08'),
-(9008,1008,800,'P',10.00,'2025-09-09'),
-(9009,1009,200,'P',65.00,'2025-09-10'),
-(9010,1010,100,'P',75.00,'2025-09-11'),
-(9011,1011,100,'P',150.00,'2025-09-12');
+(9000,1000,100,'C',80.00,'2025-09-01'),
+(9001,1001,200,'C',29.00,'2025-09-02'),
+(9002,1002,300,'C',20.00,'2025-09-03'),
+(9003,1003,300,'C',45.00,'2025-09-04'),
+(9004,1004,400,'C',30.00,'2025-09-05'),
+(9005,1005,500,'C',55.00,'2025-09-06'),
+(9006,1006,600,'C',99.99,'2025-09-07'),
+(9007,1007,700,'C',22.00,'2025-09-08'),
+(9008,1008,800,'C',10.00,'2025-09-09'),
+(9009,1009,200,'C',65.00,'2025-09-10'),
+(9010,1010,100,'C',75.00,'2025-09-11'),
+(9011,1011,100,'C',150.00,'2025-09-12');
 
 ----------------------------
 -- TRANSPROD 
-----------------------------
+---------------------------- 
 INSERT INTO transprod VALUES
 (9000,5000,1),(9000,5002,2),
 (9001,5001,1),(9001,5003,3),

@@ -48,16 +48,16 @@ CREATE TABLE customer (
 );
 
 CREATE TABLE transactions (
-  t_transcationKey decimal(4,0) NOT NULL,
-  t_custKey decimal(4,0) NOT NULL,
-  t_storeKey decimal (3,0) NOT NULL,
-  t_transcationstatus char(1) NOT NULL,
+  t_transactionKey decimal(12,0) NOT NULL,
+  t_custKey decimal(9,0) NOT NULL,
+  t_storeKey decimal (8,0) NOT NULL,
+  t_transactionstatus char(1) NOT NULL,
   t_totalpayment decimal(8,2) NOT NULL,
-  t_transcationdate date NOT NULL
+  t_transactiondate date NOT NULL
 );
 
 CREATE TABLE transprod (
-  tp_transcationKey decimal(4,0) NOT NULL,
-  tp_productKey decimal(4,0) NOT NULL,
+  tp_transactionKey decimal(12,0) NOT NULL,
+  tp_productKey decimal(10,0) NOT NULL,
   tp_quantity decimal(2,0) NOT NULL
 );

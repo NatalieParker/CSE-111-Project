@@ -1,35 +1,59 @@
--- ADD PRODUCT
+SELECT '-- 1. ADD PRODUCT --';
 INSERT INTO product
-VALUES (5005, 'USB-C Charger', 'Electronics', 1, 19.99);
+VALUES (5105, 'USB-C Charger', 'Electronics', 1, 19.99);
+--test
+SELECT * FROM product
+WHERE p_productKey = 5105;
+.print ''
 
--- ADD STOCK
+SELECT '-- 2. ADD STOCK --';
 INSERT INTO stock
-VALUES (5005, 300, 50);
+VALUES (5105, 300, 50);
+--test
+SELECT * FROM stock
+WHERE ps_productKey = 5105
+  AND ps_storeKey = 300;
+.print ''
 
--- UPDATE EXISTING PRODUCT
+SELECT '-- 3. UPDATE EXISTING PRODUCT --';
 UPDATE product
 SET p_price = 25
-WHERE p_productKey = 5005;
+WHERE p_productKey = 5105;
+--test
+SELECT p_productKey, p_price
+FROM product
+WHERE p_productKey = 5105;
+.print ''
 
--- UPDATE STOCK
+SELECT '-- 4. UPDATE STOCK --';
 UPDATE stock
 SET ps_quantity = 20
 WHERE ps_storeKey = 300
-  AND ps_productKey = 5005;
+  AND ps_productKey = 5105;
+--test
+SELECT * FROM stock
+WHERE ps_storeKey = 300 AND ps_productKey = 5105;
+.print ''
 
--- MODIFY TRANSACTION
+SELECT '-- 5. MODIFY TRANSACTION --';
 UPDATE transactions
 SET t_transactionstatus = 'C'
 WHERE t_transactionKey = 9002;
+--test
+SELECT t_transactionKey, t_transactionstatus
+FROM transactions
+WHERE t_transactionKey = 9002;
+.print ''
 
--- DELETE TRANSACTION
+SELECT '-- 6. DELETE TRANSACTION --';
 DELETE FROM transactions
 WHERE t_transactionKey = 9001;
 
 DELETE FROM transprod
 WHERE tp_transactionKey = 9001;
+.print ''
 
--- DELETE CUSTOMER ACCOUNT
+SELECT '-- 7. DELETE CUSTOMER ACCOUNT --';
 DELETE FROM customer
 WHERE c_custKey = 1001;
 
@@ -42,16 +66,17 @@ WHERE tp_transactionKey IN (
 
 DELETE FROM transactions
 WHERE t_custKey = 1001;
+.print ''
 
-
--- SEE PRODUCT STOCKS IN A STORE
+SELECT '-- 8. SEE PRODUCT STOCKS IN A STORE --';
 SELECT p_name, ps_quantity
 FROM product
 JOIN stock 
   ON ps_productKey = p_productKey
 WHERE ps_storeKey = 300;
+.print ''
 
--- SEE ALL LOW-STOCKED PRODUCTS
+SELECT '-- 9. SEE ALL LOW-STOCKED PRODUCTS --';
 SELECT s_name, p_name, ps_quantity
 FROM product
 JOIN stock
@@ -59,8 +84,9 @@ JOIN stock
 JOIN store
   ON ps_storeKey = s_storeKey
 WHERE ps_quantity < 10;
+.print ''
 
--- VIEW CUSTOMER TRANSACTIONS
+SELECT '-- 10. VIEW CUSTOMER TRANSACTIONS --';
 SELECT t_transactionKey
 FROM transactions
 JOIN customer

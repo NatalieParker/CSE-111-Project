@@ -1,0 +1,22 @@
+<html lang="eng">
+  <head>
+    <meta charset="utf-8" />
+    <title>{%block title%}My App{%endblock%}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+      .container { max-width: 520px; margin: 0 auto; }
+      .flash { padding: .6rem .8rem; border-radius: 6px; margin-bottom: .5rem; }
+      .flash.error { background:#ffe8e8 }
+      .flash.success { background:#e8ffef }
+      .flash.info { background:#e8f1ff }
+      form { display:grid; gap:.75rem }
+      input[type="email"], input[type="password"], input[type="text"] { padding:.6rem }
+      .row { display:flex; gap:.75rem; justify-content:space-between; align-items:center }
+    </style>
+  </head>
+  <body>
+    {%block body%}{%endblock%}
+  </body>
+</html>

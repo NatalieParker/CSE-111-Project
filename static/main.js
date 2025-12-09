@@ -2,6 +2,8 @@ const campusDropdown = document.getElementById("campusDropdown");
 const categoryDropdown = document.getElementById("categoryDropdown");
 const storeList = document.getElementById("storeList");
 
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
 fetch("/campuses")
   .then(res => res.json())
   .then(data => {
@@ -47,14 +49,27 @@ function loadStores() {
           <tr>
             <th>Product</th>
             <th>Price</th>
+            <th>Add to Cart</th>
           </tr>
         `;
 
         store.products.forEach(product => {
           const row = document.createElement("tr");
+          const inCart = cart.some(item => item.productKey == product.productKey);
+          let buttonLabel = inCart ? "Remove" : "Add";
+          let buttonClass = inCart ? "cart-btn in-cart" : "cart-btn";
+
           row.innerHTML = `
             <td>${product.productName}</td>
             <td>$${product.price.toFixed(2)}</td>
+            <td>
+              <button class="${buttonClass}"
+                      data-productkey="${product.productKey}"
+                      data-productname="${product.productName}"
+                      data-price="${product.price}">
+                ${buttonLabel}
+              </button>
+            </td>
           `;
           table.appendChild(row);
         });
@@ -68,7 +83,54 @@ function loadStores() {
     });
 }
 
+function addRemoveItems(event) {
+  if (!event.target.classList.contains("cart-btn")) return;
+
+  const btn = event.target;
+  const key = btn.dataset.productkey;
+  const name = btn.dataset.productname;
+  const price = parseFloat(btn.dataset.price);
+
+  const existing = cart.find(item => item.productKey == key);
+
+  if (!existing) {
+    cart.push({
+      productKey: key,
+      name: name,
+      price: price,
+      quantity: 1
+    });
+    btn.textContent = "Remove";
+    btn.classList.add("in-cart");
+  } else {
+    cart = cart.filter(item => item.productKey != key);
+    btn.textContent = "Add";
+    btn.classList.remove("in-cart");
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  // console.log(cart);
+  // updateCartView();
+}
+
+// function updateCartView() {
+//   const box = document.getElementById("cartBox");
+//   if (cart.length === 0) {
+//     box.innerHTML = "<p>No items in cart.</p>";
+//     return;
+//   }
+
+//   box.innerHTML =
+//     "<h3>Your Cart</h3>" +
+//     cart.map(item =>
+//       `<p>${item.name} – $${item.price} (x${item.quantity})</p>`
+//     ).join("");
+// }
+
+document.addEventListener("click", (event) => addRemoveItems(event));
+
 campusDropdown.addEventListener("change", loadStores);
 categoryDropdown.addEventListener("change", loadStores);
 
 loadStores();
+// updateCartView();

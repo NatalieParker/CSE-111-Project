@@ -11,8 +11,12 @@ def get_db_connection():
     return conn
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def main():
+    return render_template("main.html")
+
+@app.route("/cart")
+def cart():
+    return render_template("cart.html")
 
 @app.route("/campuses")
 def api_get_campuses():

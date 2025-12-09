@@ -28,6 +28,58 @@ function updateCartTotal() {
   totalBox.innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
 }
 
+function loadPreviousTransactions() {
+  const customerId = localStorage.getItem("customerId");
+  const container = document.getElementById("transactionsContainer");
+  if (!container) return;
+
+  if (!customerId) {
+    container.innerHTML = "<p>No customer selected.</p>";
+    return;
+  }
+
+  fetch(`/transactions?customerId=${encodeURIComponent(customerId)}`)
+    .then(res => res.json())
+    .then(data => {
+      const txns = data.transactions || [];
+
+      if (txns.length === 0) {
+        container.innerHTML = "<p>No previous transactions.</p>";
+        return;
+      }
+
+      let html = `
+        <table border="1" cellpadding="4" cellspacing="0">
+          <tr>
+            <th>Transaction #</th>
+            <th>Date</th>
+            <th>Store</th>
+            <th>Status</th>
+            <th>Total</th>
+          </tr>
+      `;
+
+      txns.forEach(t => {
+        html += `
+          <tr>
+            <td>${t.transactionKey}</td>
+            <td>${t.date}</td>
+            <td>${t.storeName}</td>
+            <td>${t.status}</td>
+            <td>$${Number(t.total).toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      html += "</table>";
+      container.innerHTML = html;
+    })
+    .catch(err => {
+      console.error("Error loading transactions", err);
+      container.innerHTML = "<p>Error loading transactions.</p>";
+    });
+}
+
 function checkout() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const customerId = localStorage.getItem("customerId");
@@ -55,4 +107,5 @@ function checkout() {
 }
 
 updateCartTotal();
+loadPreviousTransactions();
 document.getElementById("checkoutBtn").addEventListener("click", () => checkout());

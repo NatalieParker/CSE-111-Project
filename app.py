@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # so we can access columns by name
+    conn.row_factory = sqlite3.Row
     return conn
 
 @app.route("/")
@@ -154,6 +154,44 @@ def checkout():
     conn.close()
 
     return {"message": "Checkout successful", "transactionKey": new_tkey}
+
+@app.route("/transactions")
+def get_transactions():
+    customer_id = request.args.get("customerId")
+
+    if not customer_id:
+        return jsonify({"error": "Missing customerId"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT t.t_transactionKey,
+               t.t_transactiondate,
+               t.t_totalpayment,
+               t.t_transactionstatus,
+               s.s_name AS store_name
+        FROM transactions t
+        JOIN store s ON t.t_storeKey = s.s_storeKey
+        WHERE t.t_custKey = ?
+        ORDER BY t.t_transactiondate DESC, t.t_transactionKey DESC;
+    """, (customer_id,))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    return jsonify({
+        "transactions": [
+            {
+                "transactionKey": row["t_transactionKey"],
+                "date": row["t_transactiondate"],
+                "total": row["t_totalpayment"],
+                "status": row["t_transactionstatus"],
+                "storeName": row["store_name"],
+            }
+            for row in rows
+        ]
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

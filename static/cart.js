@@ -28,7 +28,31 @@ function updateCartTotal() {
   totalBox.innerHTML = `<strong>Total: $${total.toFixed(2)}</strong>`;
 }
 
+function checkout() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const customerId = localStorage.getItem("customerId");
+
+    fetch("/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerId: customerId,
+        cart: cart
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+        alert("Checkout complete! Transaction #" + data.transactionKey);
+
+        localStorage.removeItem("cart");
+        window.location = "/";
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Checkout failed.");
+    });
+}
+
 updateCartTotal();
-document.getElementById("checkoutBtn").addEventListener("click", () => {
-  alert("Checkout feature coming soon!");
-});
+document.getElementById("checkoutBtn").addEventListener("click", () => checkout());

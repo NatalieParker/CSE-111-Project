@@ -102,5 +102,58 @@ def api_get_stores():
     conn.close()
     return jsonify({"stores": results})
 
+@app.route("/checkout", methods=["POST"])
+def checkout():
+    data = request.get_json()
+    cart = data.get("cart", [])
+    customer_id = data.get("customerId")
+
+    if not cart:
+        return {"error": "Cart is empty"}, 400
+
+    if not customer_id:
+        return {"error": "Missing customerId"}, 400
+    
+    store_key = cart[0]["storeKey"]
+
+    total_payment = sum(item["price"] * item["quantity"] for item in cart)
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT COALESCE(MAX(t_transactionKey), 0) + 1 FROM transactions;")
+    new_tkey = cur.fetchone()[0]
+
+    cur.execute("""
+        INSERT INTO transactions (
+            t_transactionKey, t_custKey, t_storeKey, 
+            t_transactionstatus, t_totalpayment, t_transactiondate
+        ) VALUES (?, ?, ?, 'C', ?, DATE('now'))
+    """, (new_tkey, customer_id, store_key, total_payment))
+
+    for item in cart:
+        cur.execute("""
+            INSERT INTO transprod (
+                tp_transactionKey, tp_productKey, tp_quantity
+            ) VALUES (?, ?, ?)
+        """, (new_tkey, item["productKey"], item["quantity"]))
+
+        cur.execute("""
+            UPDATE stock
+            SET ps_quantity = ps_quantity - ?
+            WHERE ps_storeKey = ? AND ps_productKey = ?
+        """, (item["quantity"], item["storeKey"], item["productKey"]))
+
+    cur.execute("""
+        UPDATE customer
+        SET c_balance = c_balance - ?
+        WHERE c_custKey = ?
+    """, (total_payment, customer_id))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Checkout successful", "transactionKey": new_tkey}
+
 if __name__ == "__main__":
     app.run(debug=True)

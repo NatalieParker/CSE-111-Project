@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block body %}
-  <h1>Cart</h1>
+  <div style="display: flex; justify-content: space-between;">
+    <h1 style="margin: 0;">Cart</h1>
+    <button onclick="window.location='/'" style="height: 3rem;">Back</button>
+  </div>
 
   <div id="cartDisplay"></div>
   <div id="cartTotal"></div>

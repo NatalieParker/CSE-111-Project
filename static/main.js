@@ -1,3 +1,5 @@
+localStorage.setItem("customerId", "1000"); // TODO: UPDATE AFTER LOGIN IS IMPLEMENTED
+
 const campusDropdown = document.getElementById("campusDropdown");
 const categoryDropdown = document.getElementById("categoryDropdown");
 const storeList = document.getElementById("storeList");
@@ -55,7 +57,10 @@ function loadStores() {
 
         store.products.forEach(product => {
           const row = document.createElement("tr");
-          const inCart = cart.some(item => item.productKey == product.productKey);
+
+          const inCart = cart.some(
+            item => item.productKey == product.productKey && item.storeKey == store.storeKey
+          );
           let buttonLabel = inCart ? "Remove" : "Add";
           let buttonClass = inCart ? "cart-btn in-cart" : "cart-btn";
 
@@ -66,7 +71,9 @@ function loadStores() {
               <button class="${buttonClass}"
                       data-productkey="${product.productKey}"
                       data-productname="${product.productName}"
-                      data-price="${product.price}">
+                      data-price="${product.price}"
+                      data-storekey="${store.storeKey}"
+                      data-storename="${store.storeName}">
                 ${buttonLabel}
               </button>
             </td>
@@ -90,42 +97,35 @@ function addRemoveItems(event) {
   const key = btn.dataset.productkey;
   const name = btn.dataset.productname;
   const price = parseFloat(btn.dataset.price);
+  const storeKey = btn.dataset.storekey;
+  const storeName = btn.dataset.storename;
 
-  const existing = cart.find(item => item.productKey == key);
+  const existing = cart.find(
+    item => item.productKey == key && item.storeKey == storeKey
+  );
 
   if (!existing) {
     cart.push({
       productKey: key,
       name: name,
       price: price,
+      storeKey: storeKey,
+      storeName: storeName,
       quantity: 1
     });
     btn.textContent = "Remove";
     btn.classList.add("in-cart");
   } else {
-    cart = cart.filter(item => item.productKey != key);
+    cart = cart.filter(
+      item => !(item.productKey == key && item.storeKey == storeKey)
+    );
     btn.textContent = "Add";
     btn.classList.remove("in-cart");
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
-  // console.log(cart);
-  // updateCartView();
+  console.log(cart);
 }
-
-// function updateCartView() {
-//   const box = document.getElementById("cartBox");
-//   if (cart.length === 0) {
-//     box.innerHTML = "<p>No items in cart.</p>";
-//     return;
-//   }
-
-//   box.innerHTML =
-//     "<h3>Your Cart</h3>" +
-//     cart.map(item =>
-//       `<p>${item.name} – $${item.price} (x${item.quantity})</p>`
-//     ).join("");
-// }
 
 document.addEventListener("click", (event) => addRemoveItems(event));
 
@@ -133,4 +133,3 @@ campusDropdown.addEventListener("change", loadStores);
 categoryDropdown.addEventListener("change", loadStores);
 
 loadStores();
-// updateCartView();

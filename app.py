@@ -167,6 +167,7 @@ def init_auth_schema():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS user_account (
             user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+            u_custkey   INTEGER INTEGER NOT NULL,
             username    TEXT UNIQUE NOT NULL,
             password    TEXT NOT NULL,
             role        TEXT NOT NULL CHECK(role IN ('admin', 'customer'))
@@ -179,8 +180,8 @@ def init_auth_schema():
     if row["c"] == 0:
         print("[INFO] No admin account found. Creating default admin (admin / admin123).")
         cur.execute("""
-            INSERT INTO user_account (username, password, role)
-            VALUES (?, ?, 'admin');
+            INSERT INTO user_account (username, u_custkey, password, role)
+            VALUES (?, '1000', ?, 'admin');
         """, ("admin", "admin123"))
 
     conn.commit()
@@ -203,7 +204,7 @@ def login():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT user_id, username, password, role
+            SELECT user_id, u_custkey, username, password, role
             FROM user_account
             WHERE username = ?;
         """, (username,))
@@ -218,6 +219,7 @@ def login():
         session["user_id"] = user["user_id"]
         session["username"] = user["username"]
         session["role"] = user["role"]
+        session["u_custkey"] = user["u_custkey"]
 
         # role에 따라 다른 페이지로
         if user["role"] == "admin":
@@ -251,11 +253,19 @@ def register():
             conn.close()
             flash("Username already exists.", "error")
             return render_template("register.html")
+        
+        cur.execute("SELECT COALESCE(MAX(c_custkey), 999) + 1 FROM customer;")
+        new_cust_key = cur.fetchone()[0]
 
         cur.execute("""
-            INSERT INTO user_account (username, password, role)
-            VALUES (?, ?, 'customer');
-        """, (username, password))
+            INSERT INTO customer (c_custkey, c_name, c_address, c_citykey, c_phone, c_balance)
+            VALUES(?, ?, 'N/A', 1, '222-222-2222', 100);
+        """, (new_cust_key, username))
+
+        cur.execute("""
+            INSERT INTO user_account (username, u_custkey, password, role)
+            VALUES (?, ?, ?, 'customer');
+        """, (username, new_cust_key, password))
         conn.commit()
         conn.close()
 
@@ -281,7 +291,7 @@ def home():
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
     # admin이 /home 가면 그냥 검색 페이지 보여줘도 되고, 막고 /admin으로 보낼 수도 있음
-    return render_template("main.html")
+    return render_template("main.html", customer_id=session.get("u_custkey"))
 
 
 @app.route("/cart")

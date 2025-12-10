@@ -52,7 +52,7 @@ INSERT INTO store VALUES
 -- CUSTOMERS (15)
 ----------------------------
 INSERT INTO customer VALUES
-(1000, 'Alice',   '123 Shattuck Ave', 1, '510-000-0000', 120.00),
+(1000, 'Admin',   'N/A',      1, '111-111-1111', 999),
 (1001, 'Bob',     '456 Sunset Blvd',  2, '213-111-1111', 75.50),
 (1002, 'Charlie', '789 G St',         3, '209-222-2222', 10.00),
 (1003, 'Dana',    '44 Lake Rd',       3, '209-333-3333', 15.00),

@@ -1,4 +1,4 @@
-localStorage.setItem("customerId", "1000"); // TODO: UPDATE AFTER LOGIN IS IMPLEMENTED
+// localStorage.setItem("customerId", "1000"); // TODO: UPDATE AFTER LOGIN IS IMPLEMENTED
 
 const campusDropdown = document.getElementById("campusDropdown");
 const categoryDropdown = document.getElementById("categoryDropdown");
@@ -88,6 +88,7 @@ function loadStores() {
       storeList.innerHTML = "<p>Error loading data.</p>";
       console.error(err);
     });
+    console.log("LOCAL STORAGE CUSTOMER ID: ", localStorage.getItem("customerId"));
 }
 
 function addRemoveItems(event) {

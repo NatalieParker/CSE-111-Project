@@ -240,6 +240,8 @@ def register():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
+        address = request.form.get("address", "").strip()
+        phonenum = request.form.get("phonenum", "").strip()
 
         if not username or not password:
             flash("Username and password are required.", "error")
@@ -259,8 +261,8 @@ def register():
 
         cur.execute("""
             INSERT INTO customer (c_custkey, c_name, c_address, c_citykey, c_phone, c_balance)
-            VALUES(?, ?, 'N/A', 1, '222-222-2222', 100);
-        """, (new_cust_key, username))
+            VALUES(?, ?, ?, 1, ?, 100);
+        """, (new_cust_key, username, address, phonenum))
 
         cur.execute("""
             INSERT INTO user_account (username, u_custkey, password, role)

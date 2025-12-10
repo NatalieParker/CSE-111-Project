@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h1>Admin Dashboard</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="flash {{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <p>
+    Logged in as <strong>{{ session.username }}</strong>
+    (<code>{{ session.role }}</code>)
+    | <a href="{{ url_for('home') }}">User View</a>
+    | <a href="{{ url_for('logout') }}">Logout</a>
+  </p>
+
+  <hr>
+
+  <p>
+    <a href="{{ url_for('admin_products') }}">Manage Products</a> |
+    <a href="{{ url_for('admin_customers') }}">Manage Customers</a> |
+    <a href="{{ url_for('admin_transactions') }}">Manage Transactions</a>
+  </p>
+{% if section == "products" %}
+  <h2>Products</h2>
+  <h3>Current Products</h3>
+  <table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+      <th>Key</th><th>Name</th><th>Category</th><th>Size</th><th>Price</th>
+    </tr>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.p_productKey }}</td>
+      <td>{{ p.p_name }}</td>
+      <td>{{ p.p_category }}</td>
+      <td>{{ p.p_size }}</td>
+      <td>{{ p.p_price }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Add Product</h3>
+  <form method="POST" action="{{ url_for('admin_products') }}">
+    <input type="hidden" name="action" value="add">
+    <label>Name:</label><input name="name"><br>
+    <label>Category:</label><input name="category" placeholder="APPAREL/MERCH/STAT/TECH"><br>
+    <label>Size:</label><input name="size" placeholder="S/M/L"><br>
+    <label>Price:</label><input type="number" step="0.01" name="price"><br>
+    <button type="submit">Add</button>
+  </form>
+
+  <h3>Update Product (any fields)</h3>
+  <form method="POST" action="{{ url_for('admin_products') }}">
+    <input type="hidden" name="action" value="update">
+    <label>Product Key:</label><input name="productKey"><br>
+    <label>New Name:</label><input name="name" placeholder="leave blank to keep"><br>
+    <label>New Category:</label><input name="category" placeholder="leave blank to keep"><br>
+    <label>New Size:</label><input name="size" placeholder="leave blank to keep"><br>
+    <label>New Price:</label><input type="number" step="0.01" name="price" placeholder="leave blank to keep"><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <h3>Delete Product</h3>
+  <form method="POST" action="{{ url_for('admin_products') }}">
+    <input type="hidden" name="action" value="delete">
+    <label>Product Key:</label><input name="productKey"><br>
+    <button type="submit">Delete</button>
+  </form>
+
+{% elif section == "customers" %}
+  <h2>Customers</h2>
+  <h3>Current Customers</h3>
+  <table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+      <th>Key</th><th>Name</th><th>Address</th><th>CityKey</th><th>Phone</th><th>Balance</th>
+    </tr>
+    {% for c in customers %}
+    <tr>
+      <td>{{ c.c_custKey }}</td>
+      <td>{{ c.c_name }}</td>
+      <td>{{ c.c_address }}</td>
+      <td>{{ c.c_cityKey }}</td>
+      <td>{{ c.c_phone }}</td>
+      <td>{{ c.c_balance }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Add Customer</h3>
+  <form method="POST" action="{{ url_for('admin_customers') }}">
+    <input type="hidden" name="action" value="add">
+    <label>Name:</label><input name="name"><br>
+    <label>Address:</label><input name="address"><br>
+    <label>City Key:</label><input name="cityKey"><br>
+    <label>Phone:</label><input name="phone"><br>
+    <button type="submit">Add</button>
+  </form>
+
+  <h3>Update Customer (any fields)</h3>
+  <form method="POST" action="{{ url_for('admin_customers') }}">
+    <input type="hidden" name="action" value="update">
+    <label>Customer Key:</label><input name="custKey"><br>
+    <label>New Name:</label><input name="name" placeholder="leave blank to keep"><br>
+    <label>New Address:</label><input name="address" placeholder="leave blank to keep"><br>
+    <label>New City Key:</label><input name="cityKey" placeholder="leave blank to keep"><br>
+    <label>New Phone:</label><input name="phone" placeholder="leave blank to keep"><br>
+    <label>New Balance:</label><input type="number" step="0.01" name="balance" placeholder="leave blank to keep"><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <h3>Delete Customer</h3>
+  <form method="POST" action="{{ url_for('admin_customers') }}">
+    <input type="hidden" name="action" value="delete">
+    <label>Customer Key:</label><input name="custKey"><br>
+    <button type="submit">Delete</button>
+  </form>
+
+
+{% elif section == "transactions" %}
+  <h2>Transactions</h2>
+  <h3>Current Transactions</h3>
+  <table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+      <th>Key</th><th>CustKey</th><th>StoreKey</th><th>Status</th><th>Total</th><th>Date</th>
+    </tr>
+    {% for t in transactions %}
+    <tr>
+      <td>{{ t.t_transactionKey }}</td>
+      <td>{{ t.t_custKey }}</td>
+      <td>{{ t.t_storeKey }}</td>
+      <td>{{ t.t_transactionstatus }}</td>
+      <td>{{ t.t_totalpayment }}</td>
+      <td>{{ t.t_transactiondate }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Add Transaction</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="add">
+    <label>CustKey:</label><input name="custKey"><br>
+    <label>StoreKey:</label><input name="storeKey"><br>
+    <label>Status:</label><input name="status" placeholder="R/S/C/D/U"><br>
+    <label>Date:</label><input name="date" placeholder="YYYY-MM-DD"><br>
+    <label>Initial Total (optional):</label><input type="number" step="0.01" name="total"><br>
+    <button type="submit">Add</button>
+  </form>
+
+  <h3>Update Transaction (any fields)</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="update">
+    <label>Transaction Key:</label><input name="transKey"><br>
+    <label>New CustKey:</label><input name="custKey" placeholder="leave blank to keep"><br>
+    <label>New StoreKey:</label><input name="storeKey" placeholder="leave blank to keep"><br>
+    <label>New Status:</label><input name="status" placeholder="leave blank to keep"><br>
+    <label>New Date:</label><input name="date" placeholder="YYYY-MM-DD"><br>
+    <label>New Total:</label><input type="number" step="0.01" name="total" placeholder="leave blank to keep"><br>
+    <button type="submit">Update</button>
+  </form>
+
+  <h3>Add Item to Transaction</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="add_item">
+    <label>Transaction Key:</label><input name="transKey"><br>
+    <label>Product Key:</label><input name="productKey"><br>
+    <label>Quantity:</label><input name="quantity"><br>
+    <button type="submit">Add Item</button>
+  </form>
+
+  <h3>Delete All Items for a Transaction (and reset total)</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="delete_items">
+    <label>Transaction Key:</label><input name="transKey"><br>
+    <button type="submit">Delete Items</button>
+  </form>
+
+  <h3>Recalculate Total from Items</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="recalc_total">
+    <label>Transaction Key:</label><input name="transKey"><br>
+    <button type="submit">Recalculate</button>
+  </form>
+
+  <h3>Delete Transaction</h3>
+  <form method="POST" action="{{ url_for('admin_transactions') }}">
+    <input type="hidden" name="action" value="delete">
+    <label>Transaction Key:</label><input name="transKey"><br>
+    <button type="submit">Delete</button>
+  </form>
+
+
+  {% else %}
+    <p>Select a section above to manage Products, Customers, or Transactions.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

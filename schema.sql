@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS store;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS campus;
 DROP TABLE IF EXISTS city;
+DROP TABLE IF EXISTS user_account;
 
 CREATE TABLE city (
   ci_cityKey decimal(1,0) NOT NULL,

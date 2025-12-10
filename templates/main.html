@@ -3,7 +3,8 @@
 {% block body %}
   <h1>Shop UC Products</h1>
   <button onclick="window.location='/cart'">View Cart</button>
-  
+  <button onclick="window.location='/logout'">Logout</button>
+
   <br>
 
   <div style="margin-top: 2rem;">
@@ -28,4 +29,14 @@
   </div>
 
   <script src="../static/main.js"></script>
+  <script>
+    (function () {
+      const customerId = "{{ customer_id }}";
+      if (customerId) {
+        window.localStorage.setItem("customerId", customerId);
+      } else {
+        window.localStorage.removeItem("customerId");
+      }
+    })();
+  </script>
 {%endblock%}

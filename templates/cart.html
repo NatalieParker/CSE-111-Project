@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+  <div style="display: flex; justify-content: space-between;">
+    <h1 style="margin: 0;">Cart</h1>
+    <button onclick="window.location='/'" style="height: 3rem;">Back</button>
+  </div>
+
+  <div id="cartDisplay"></div>
+  <div id="cartTotal"></div>
+  <button id="checkoutBtn">Checkout</button>
+
+  <h3>Previous Transactions</h3>
+  <div id="transactionsContainer"></div>
+
+  <script src="../static/cart.js"></script>
+{%endblock%}

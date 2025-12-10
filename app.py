@@ -7,12 +7,16 @@ app = Flask(__name__)
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # so we can access columns by name
+    conn.row_factory = sqlite3.Row
     return conn
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def main():
+    return render_template("main.html")
+
+@app.route("/cart")
+def cart():
+    return render_template("cart.html")
 
 @app.route("/campuses")
 def api_get_campuses():
@@ -97,6 +101,97 @@ def api_get_stores():
 
     conn.close()
     return jsonify({"stores": results})
+
+@app.route("/checkout", methods=["POST"])
+def checkout():
+    data = request.get_json()
+    cart = data.get("cart", [])
+    customer_id = data.get("customerId")
+
+    if not cart:
+        return {"error": "Cart is empty"}, 400
+
+    if not customer_id:
+        return {"error": "Missing customerId"}, 400
+    
+    store_key = cart[0]["storeKey"]
+
+    total_payment = sum(item["price"] * item["quantity"] for item in cart)
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT COALESCE(MAX(t_transactionKey), 0) + 1 FROM transactions;")
+    new_tkey = cur.fetchone()[0]
+
+    cur.execute("""
+        INSERT INTO transactions (
+            t_transactionKey, t_custKey, t_storeKey, 
+            t_transactionstatus, t_totalpayment, t_transactiondate
+        ) VALUES (?, ?, ?, 'C', ?, DATE('now'))
+    """, (new_tkey, customer_id, store_key, total_payment))
+
+    for item in cart:
+        cur.execute("""
+            INSERT INTO transprod (
+                tp_transactionKey, tp_productKey, tp_quantity
+            ) VALUES (?, ?, ?)
+        """, (new_tkey, item["productKey"], item["quantity"]))
+
+        cur.execute("""
+            UPDATE stock
+            SET ps_quantity = ps_quantity - ?
+            WHERE ps_storeKey = ? AND ps_productKey = ?
+        """, (item["quantity"], item["storeKey"], item["productKey"]))
+
+    cur.execute("""
+        UPDATE customer
+        SET c_balance = c_balance - ?
+        WHERE c_custKey = ?
+    """, (total_payment, customer_id))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Checkout successful", "transactionKey": new_tkey}
+
+@app.route("/transactions")
+def get_transactions():
+    customer_id = request.args.get("customerId")
+
+    if not customer_id:
+        return jsonify({"error": "Missing customerId"}), 400
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT t.t_transactionKey,
+               t.t_transactiondate,
+               t.t_totalpayment,
+               t.t_transactionstatus,
+               s.s_name AS store_name
+        FROM transactions t
+        JOIN store s ON t.t_storeKey = s.s_storeKey
+        WHERE t.t_custKey = ?
+        ORDER BY t.t_transactiondate DESC, t.t_transactionKey DESC;
+    """, (customer_id,))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    return jsonify({
+        "transactions": [
+            {
+                "transactionKey": row["t_transactionKey"],
+                "date": row["t_transactiondate"],
+                "total": row["t_totalpayment"],
+                "status": row["t_transactionstatus"],
+                "storeName": row["store_name"],
+            }
+            for row in rows
+        ]
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

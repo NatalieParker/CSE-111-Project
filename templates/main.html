@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+  <h1>Shop UC Products</h1>
+  <button onclick="window.location='/cart'">View Cart</button>
+  
+  <br>
+
+  <div style="margin-top: 2rem;">
+    <label for="campusDropdown">Search Campus:</label>
+    <select id="campusDropdown" name="campus" style="height: 1.5rem;">
+      <option value="">Loading...</option>
+    </select>
+  
+    <label for="categoryDropdown" style="margin-left: 1rem;">Category:</label>
+    <select id="categoryDropdown" name="category" style="height: 1.5rem;">
+      <option value="">All</option>
+      <option value="APPAREL">APPAREL</option>
+      <option value="MERCH">MERCH</option>
+      <option value="STAT">STAT</option>
+      <option value="TECH">TECH</option>
+    </select>
+  
+    <div id="storeList">
+    </div>
+  
+    <div id="cartBox"></div>
+  </div>
+
+  <script src="../static/main.js"></script>
+{%endblock%}

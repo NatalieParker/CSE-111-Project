@@ -24,6 +24,11 @@
       <label>Address:</label>
       <input type="text" name="address" required />
 
+      <label>City:</label>
+      <select id="cityDropdown" name="cityKey" required>
+        <option value="">Select your city</option>
+      </select>
+
       <label>Phone number:</label>
       <input type="text" name="phonenum" required />
 
@@ -35,4 +40,27 @@
       <a href="{{ url_for('login') }}">Back to login</a>
     </p>
   </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const cityDropdown = document.getElementById("cityDropdown");
+    if (!cityDropdown) return;
+
+    fetch("/cities")
+      .then(res => res.json())
+      .then(data => {
+        cityDropdown.innerHTML = `<option value="">Select your city</option>`;
+
+        (data.cities || []).forEach(city => {
+          const option = document.createElement("option");
+          option.value = city.cityKey;
+          option.textContent = city.cityName;
+          cityDropdown.appendChild(option);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading cities", err);
+      });
+  });
+</script>
 {% endblock %}

@@ -241,6 +241,7 @@ def register():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         address = request.form.get("address", "").strip()
+        city_key = request.form.get("cityKey", "").strip()
         phonenum = request.form.get("phonenum", "").strip()
 
         if not username or not password:
@@ -261,8 +262,8 @@ def register():
 
         cur.execute("""
             INSERT INTO customer (c_custkey, c_name, c_address, c_citykey, c_phone, c_balance)
-            VALUES(?, ?, ?, 1, ?, 100);
-        """, (new_cust_key, username, address, phonenum))
+            VALUES(?, ?, ?, ?, ?, 100);
+        """, (new_cust_key, username, address, city_key, phonenum))
 
         cur.execute("""
             INSERT INTO user_account (username, u_custkey, password, role)
@@ -276,6 +277,30 @@ def register():
 
     return render_template("register.html")
 
+from flask import jsonify
+
+@app.route("/cities")
+def get_cities():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT ci_cityKey, ci_name
+        FROM city
+        ORDER BY ci_name;
+    """)
+    rows = cur.fetchall()
+    conn.close()
+
+    return jsonify({
+        "cities": [
+            {
+                "cityKey": row["ci_cityKey"],
+                "cityName": row["ci_name"],
+            }
+            for row in rows
+        ]
+    })
 
 @app.route("/logout")
 def logout():
